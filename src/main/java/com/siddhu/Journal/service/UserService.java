@@ -1,8 +1,8 @@
 package com.siddhu.Journal.service;
 
-import com.siddhu.Journal.entity.apiResponce;
-import com.siddhu.Journal.entity.user;
-import com.siddhu.Journal.repository.userRepo;
+import com.siddhu.Journal.entity.ApiResponce;
+import com.siddhu.Journal.entity.User;
+import com.siddhu.Journal.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,23 +10,23 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class userService {
+public class UserService {
 
     @Autowired
-    private weatherService weatherService;
+    private WeatherService weatherService;
 
     @Autowired
-    private userRepo repo;
+    private UserRepo repo;
 
-    public void saveUser(user user){
+    public void saveUser(User user){
         repo.save(user);
     }
 
-    public List<user> getAll(){
+    public List<User> getAll(){
         return repo.findAll();
     }
 
-    public user getByUsername(String username){
+    public User getByUsername(String username){
         return repo.findByusername(username);
     }
 
@@ -35,11 +35,10 @@ public class userService {
     }
 
     public ResponseEntity<?> greeting(String name, String city){
-        apiResponce responce = weatherService.getWeather(city);
+        ApiResponce responce = weatherService.getWeather(city);
         String greetings = "";
         if(responce != null){
             greetings = "hi " + name + ", Weather feels like " + responce.getCurrent().getTemperature();
-
         }
         return ResponseEntity.ok(greetings);
     }

@@ -1,7 +1,7 @@
 package com.siddhu.Journal.controller;
 
-import com.siddhu.Journal.entity.user;
-import com.siddhu.Journal.service.userService;
+import com.siddhu.Journal.entity.User;
+import com.siddhu.Journal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,39 +11,39 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
-public class userController {
+public class UserController {
     @Autowired
-    private userService service;
+    private UserService service;
 
     @GetMapping
-    public List<user> getAllUser(){
+    public List<User> getAllUser(){
         return service.getAll();
     }
 
     @GetMapping("/{username}/{city}")
     public ResponseEntity<?> greetings(@PathVariable String username, @PathVariable String city){
-        user user = service.getByUsername(username);
+        User user = service.getByUsername(username);
         if(user != null){
-            return service.greeting(username, city);
+            return service.greeting(username,city);
         }else return ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public user createUser(@RequestBody user user){
+    public ResponseEntity<User> createUser(@RequestBody User user){
         service.saveUser(user);
-        return user;
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<?> updateUser(@RequestBody user user, @PathVariable String username){
-        user old = service.getByUsername(username);
+    public ResponseEntity<?> updateUser(@RequestBody User user, @PathVariable String username){
+        User old = service.getByUsername(username);
 
         if(old != null){
             old.setUsername(user.getUsername());
+            service.saveUser(old);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-
-        service.saveUser(old);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{username}")

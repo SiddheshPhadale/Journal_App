@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class apiResponce {
+public class ApiResponce {
     public Current current;
 
     @Getter

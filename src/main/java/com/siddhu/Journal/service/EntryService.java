@@ -1,52 +1,48 @@
 package com.siddhu.Journal.service;
 
-import com.siddhu.Journal.entity.entry;
-import com.siddhu.Journal.entity.user;
-import com.siddhu.Journal.repository.entryRepo;
+import com.siddhu.Journal.entity.Entry;
+import com.siddhu.Journal.entity.User;
+import com.siddhu.Journal.repository.EntryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 //import com.siddhu.Journal.config.redisConfig;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
-public class entryService {
+public class EntryService {
 
     @Autowired
-    private entryRepo repo;
+    private EntryRepo repo;
 
     @Autowired
     private RedisService redisService;
 
     @Autowired
-    private userService service;
+    private UserService service;
 
     @CachePut(value = "entry", key = "#entry.id")
-    public entry saveEntry(entry entry, String id){
-        user user = service.getByUsername(id);
-        entry.setDate(LocalDate.now());
-        entry saved = repo.save(entry);
+    public Entry saveEntry(Entry entry, String id){
+        User user = service.getByUsername(id);
+        Entry saved = repo.save(entry);
         user.getEntries().add(saved);
         service.saveUser(user);
         return saved;
     }
 
     @Cacheable(value = "entry", key = "#id")
-    public Optional<entry> getById(Long id){
+    public Optional<Entry> getById(Long id){
         return repo.findById(id);
     }
 
     @CacheEvict(value = "entry", key = "#id")
     public boolean delete(Long id, String username){
         try {
-            user user = service.getByUsername(username);
+            User user = service.getByUsername(username);
             boolean b = user.getEntries().removeIf(x -> x.getId().equals(id));
             if(b) {
                 repo.deleteById(id);
@@ -60,12 +56,12 @@ public class entryService {
     }
 
     @CachePut(value = "entry", key = "#id")
-    public entry editById(Long id , entry myEntry, String username){
-        user user = service.getByUsername(username);
+    public Entry editById(Long id , Entry myEntry, String username){
+        User user = service.getByUsername(username);
         boolean b = user.getEntries().stream().anyMatch(x -> x.getId().equals(id));
 
         if(b){
-            entry old = getById(id).orElse(null);
+            Entry old = getById(id).orElse(null);
 
             if(old != null){
                 old.setTitle(myEntry.getTitle() != null && !myEntry.getTitle().equals("") ? myEntry.getTitle() : old.getTitle());

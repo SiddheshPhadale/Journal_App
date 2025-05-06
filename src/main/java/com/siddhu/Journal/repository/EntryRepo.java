@@ -1,10 +1,9 @@
 package com.siddhu.Journal.repository;
 
-import com.siddhu.Journal.entity.user;
+import com.siddhu.Journal.entity.Entry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface userRepo extends JpaRepository<user,Long> {
-    user findByusername(String username);
+public interface EntryRepo extends JpaRepository<Entry,Long> {
 }

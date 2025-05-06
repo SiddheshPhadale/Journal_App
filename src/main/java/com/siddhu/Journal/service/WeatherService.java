@@ -1,12 +1,12 @@
 package com.siddhu.Journal.service;
 
-import com.siddhu.Journal.entity.apiResponce;
+import com.siddhu.Journal.entity.ApiResponce;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class weatherService {
+public class WeatherService {
 
     @Autowired
     private RedisService redisService;
@@ -18,14 +18,14 @@ public class weatherService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public apiResponce getWeather(String city){
-        apiResponce responce = redisService.get(city, apiResponce.class);
+    public ApiResponce getWeather(String city){
+        ApiResponce responce = redisService.get(city, ApiResponce.class);
 
         if (responce != null) return responce;
 
         else {
             String finalApi = url.replace("API_KEY", apiKey).replace("CITY", city);
-            apiResponce finalResponce = restTemplate.getForObject(finalApi, apiResponce.class);
+            ApiResponce finalResponce = restTemplate.getForObject(finalApi, ApiResponce.class);
             if(finalResponce != null){
                 redisService.set(city, finalResponce, 10);
             }
